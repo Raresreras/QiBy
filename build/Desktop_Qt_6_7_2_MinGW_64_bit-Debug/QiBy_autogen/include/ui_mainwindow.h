@@ -10,6 +10,7 @@
 #define UI_MAINWINDOW_H
 
 #include <QtCore/QVariant>
+#include <QtGui/QIcon>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QHeaderView>
@@ -36,6 +37,15 @@ public:
     QLabel *label_3;
     QPushButton *pushButton;
     QPushButton *pushButton_2;
+    QLabel *label_4;
+    QLineEdit *keyInput;
+    QLineEdit *platformInput;
+    QLineEdit *keyInput_2;
+    QLabel *label_5;
+    QLabel *label_6;
+    QPushButton *pushButton_3;
+    QPushButton *pushButton_4;
+    QLabel *logo;
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *MainWindow)
@@ -45,6 +55,9 @@ public:
         MainWindow->resize(400, 600);
         MainWindow->setMinimumSize(QSize(400, 600));
         MainWindow->setMaximumSize(QSize(400, 600));
+        QIcon icon;
+        icon.addFile(QString::fromUtf8("logo-white.png"), QSize(), QIcon::Mode::Normal, QIcon::State::Off);
+        MainWindow->setWindowIcon(icon);
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName("centralwidget");
         label = new QLabel(centralwidget);
@@ -68,29 +81,59 @@ public:
         if (tableWidget->rowCount() < 32)
             tableWidget->setRowCount(32);
         tableWidget->setObjectName("tableWidget");
-        tableWidget->setGeometry(QRect(20, 370, 340, 200));
-        tableWidget->setMinimumSize(QSize(340, 200));
+        tableWidget->setGeometry(QRect(20, 370, 350, 200));
+        tableWidget->setMinimumSize(QSize(350, 200));
         tableWidget->setMaximumSize(QSize(340, 200));
         tableWidget->setRowCount(32);
         tableWidget->setColumnCount(3);
         usernameInput = new QLineEdit(centralwidget);
         usernameInput->setObjectName("usernameInput");
-        usernameInput->setGeometry(QRect(130, 140, 140, 28));
+        usernameInput->setGeometry(QRect(130, 90, 140, 28));
         passwordInput = new QLineEdit(centralwidget);
         passwordInput->setObjectName("passwordInput");
-        passwordInput->setGeometry(QRect(130, 180, 140, 28));
+        passwordInput->setGeometry(QRect(130, 130, 140, 28));
         label_2 = new QLabel(centralwidget);
         label_2->setObjectName("label_2");
-        label_2->setGeometry(QRect(20, 140, 80, 20));
+        label_2->setGeometry(QRect(20, 90, 80, 20));
         label_3 = new QLabel(centralwidget);
         label_3->setObjectName("label_3");
-        label_3->setGeometry(QRect(20, 180, 63, 20));
+        label_3->setGeometry(QRect(20, 130, 63, 20));
         pushButton = new QPushButton(centralwidget);
         pushButton->setObjectName("pushButton");
-        pushButton->setGeometry(QRect(290, 150, 83, 41));
+        pushButton->setGeometry(QRect(290, 90, 83, 41));
         pushButton_2 = new QPushButton(centralwidget);
         pushButton_2->setObjectName("pushButton_2");
-        pushButton_2->setGeometry(QRect(20, 320, 83, 29));
+        pushButton_2->setGeometry(QRect(290, 320, 83, 29));
+        label_4 = new QLabel(centralwidget);
+        label_4->setObjectName("label_4");
+        label_4->setGeometry(QRect(20, 320, 31, 20));
+        keyInput = new QLineEdit(centralwidget);
+        keyInput->setObjectName("keyInput");
+        keyInput->setGeometry(QRect(60, 320, 221, 28));
+        platformInput = new QLineEdit(centralwidget);
+        platformInput->setObjectName("platformInput");
+        platformInput->setGeometry(QRect(130, 170, 141, 28));
+        keyInput_2 = new QLineEdit(centralwidget);
+        keyInput_2->setObjectName("keyInput_2");
+        keyInput_2->setGeometry(QRect(130, 210, 141, 28));
+        label_5 = new QLabel(centralwidget);
+        label_5->setObjectName("label_5");
+        label_5->setGeometry(QRect(22, 170, 71, 20));
+        label_6 = new QLabel(centralwidget);
+        label_6->setObjectName("label_6");
+        label_6->setGeometry(QRect(20, 210, 101, 20));
+        pushButton_3 = new QPushButton(centralwidget);
+        pushButton_3->setObjectName("pushButton_3");
+        pushButton_3->setGeometry(QRect(290, 140, 83, 41));
+        pushButton_4 = new QPushButton(centralwidget);
+        pushButton_4->setObjectName("pushButton_4");
+        pushButton_4->setGeometry(QRect(290, 190, 83, 41));
+        logo = new QLabel(centralwidget);
+        logo->setObjectName("logo");
+        logo->setGeometry(QRect(20, 20, 41, 41));
+        logo->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+        logo->setPixmap(QPixmap(QString::fromUtf8("logo-transparent.png")));
+        logo->setScaledContents(true);
         MainWindow->setCentralWidget(centralwidget);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName("statusbar");
@@ -110,15 +153,21 @@ public:
         comboBox->setItemText(2, QCoreApplication::translate("MainWindow", "Vault #3", nullptr));
 
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
-        ___qtablewidgetitem->setText(QCoreApplication::translate("MainWindow", "ID", nullptr));
+        ___qtablewidgetitem->setText(QCoreApplication::translate("MainWindow", "Username", nullptr));
         QTableWidgetItem *___qtablewidgetitem1 = tableWidget->horizontalHeaderItem(1);
-        ___qtablewidgetitem1->setText(QCoreApplication::translate("MainWindow", "Username", nullptr));
+        ___qtablewidgetitem1->setText(QCoreApplication::translate("MainWindow", "Password", nullptr));
         QTableWidgetItem *___qtablewidgetitem2 = tableWidget->horizontalHeaderItem(2);
-        ___qtablewidgetitem2->setText(QCoreApplication::translate("MainWindow", "Password", nullptr));
+        ___qtablewidgetitem2->setText(QCoreApplication::translate("MainWindow", "Platform", nullptr));
         label_2->setText(QCoreApplication::translate("MainWindow", "Username", nullptr));
         label_3->setText(QCoreApplication::translate("MainWindow", "Password", nullptr));
         pushButton->setText(QCoreApplication::translate("MainWindow", "Insert", nullptr));
         pushButton_2->setText(QCoreApplication::translate("MainWindow", "Update", nullptr));
+        label_4->setText(QCoreApplication::translate("MainWindow", "Key", nullptr));
+        label_5->setText(QCoreApplication::translate("MainWindow", "Platform", nullptr));
+        label_6->setText(QCoreApplication::translate("MainWindow", "Encryption key", nullptr));
+        pushButton_3->setText(QCoreApplication::translate("MainWindow", "Delete", nullptr));
+        pushButton_4->setText(QCoreApplication::translate("MainWindow", "Update", nullptr));
+        logo->setText(QString());
     } // retranslateUi
 
 };
