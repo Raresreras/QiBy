@@ -65,8 +65,6 @@ public:
         label->setGeometry(QRect(20, 280, 100, 30));
         comboBox = new QComboBox(centralwidget);
         comboBox->addItem(QString());
-        comboBox->addItem(QString());
-        comboBox->addItem(QString());
         comboBox->setObjectName("comboBox");
         comboBox->setGeometry(QRect(130, 280, 240, 30));
         tableWidget = new QTableWidget(centralwidget);
@@ -92,6 +90,7 @@ public:
         passwordInput = new QLineEdit(centralwidget);
         passwordInput->setObjectName("passwordInput");
         passwordInput->setGeometry(QRect(130, 130, 140, 28));
+        passwordInput->setMaxLength(32);
         label_2 = new QLabel(centralwidget);
         label_2->setObjectName("label_2");
         label_2->setGeometry(QRect(20, 90, 80, 20));
@@ -110,12 +109,14 @@ public:
         keyInput = new QLineEdit(centralwidget);
         keyInput->setObjectName("keyInput");
         keyInput->setGeometry(QRect(60, 320, 221, 28));
+        keyInput->setMaxLength(8);
         platformInput = new QLineEdit(centralwidget);
         platformInput->setObjectName("platformInput");
         platformInput->setGeometry(QRect(130, 170, 141, 28));
         keyInput_2 = new QLineEdit(centralwidget);
         keyInput_2->setObjectName("keyInput_2");
         keyInput_2->setGeometry(QRect(130, 210, 141, 28));
+        keyInput_2->setMaxLength(8);
         label_5 = new QLabel(centralwidget);
         label_5->setObjectName("label_5");
         label_5->setGeometry(QRect(22, 170, 71, 20));
@@ -149,8 +150,6 @@ public:
         MainWindow->setWindowTitle(QCoreApplication::translate("MainWindow", "MainWindow", nullptr));
         label->setText(QCoreApplication::translate("MainWindow", "Password vault", nullptr));
         comboBox->setItemText(0, QCoreApplication::translate("MainWindow", "Vault #1", nullptr));
-        comboBox->setItemText(1, QCoreApplication::translate("MainWindow", "Vault #2", nullptr));
-        comboBox->setItemText(2, QCoreApplication::translate("MainWindow", "Vault #3", nullptr));
 
         QTableWidgetItem *___qtablewidgetitem = tableWidget->horizontalHeaderItem(0);
         ___qtablewidgetitem->setText(QCoreApplication::translate("MainWindow", "Username", nullptr));

@@ -8,6 +8,15 @@
 #include <QtSql/QSqlQuery>
 #include <QDebug>
 
+//DES encryption
+#include <iostream>
+#include <cstring>
+#include <algorithm>
+#include "DES.h"
+#include "DES.cpp"
+const int source_size = 32;
+const char* HexaDigits = "0123456789abcdef";
+
 QString vault;
 
 MainWindow::MainWindow(QWidget *parent)
@@ -55,7 +64,42 @@ void MainWindow::on_pushButton_released()
     QString password = ui->passwordInput->text();
     QString platform = ui->platformInput->text();
 
-    //This works, need to add encryption and clean the code up
+    QString uiKey = ui->keyInput_2->text();
+    char key[8] = { 0 };
+
+    //Values for encryption
+    QByteArray ba = uiKey.toLatin1();
+    std::strncpy(key, ba.constData(), sizeof(key));
+
+    char source[source_size] = { 0 };
+    ba = password.toLatin1();
+    std::strncpy(source, ba.constData(), sizeof(password.toLatin1()));
+    size_t length = strlen(source);
+    size_t chunkSize = 8;
+    size_t totalChunks = (length + chunkSize - 1) / chunkSize;
+
+    // Round Keys for DES Encryption and Decryption
+    char roundKeys[16][8];
+    DES_CreateKeys(key, roundKeys);
+
+    char encrypted[64] = { 0 };
+
+    for (size_t i = 0; i < totalChunks; i++) {
+        char chunk[8] = { 0 }; // must be zero-initialized
+        char cipherText[8] = { 0 };
+        char original[9] = { 0 };
+        size_t start = i * chunkSize;
+        size_t end = std::min(start + chunkSize, length);
+
+        std::copy(source + start, source + end, chunk);
+
+        DES_Encrypt(chunk, roundKeys, cipherText);
+
+        memcpy(encrypted + 8 * i, cipherText, 8); //8 * i sets an offset for the encrypted char array
+    }
+
+    password = QString::fromLatin1(encrypted);
+
     DB_Connection.open();
     QSqlDatabase::database().transaction();
     QSqlQuery QueryInsertData(DB_Connection);
@@ -69,29 +113,67 @@ void MainWindow::on_pushButton_released()
         qDebug() << QueryInsertData.lastError();
     QSqlDatabase::database().commit();
     DB_Connection.close();
+
+    //Emptying memory where data has been stored
+    std::fill(key, key + 8, 0);
+    std::fill(source, source + source_size, 0);
 }
 
 
 void MainWindow::on_pushButton_2_released()
 {
-    //update button
-    qDebug() << ui->keyInput->text();
+    //Decryption initialization
+    QString uiKey = ui->keyInput->text();
+    char key[8] = { 0 };
 
-    //TODO!!! clean code and add decryption
+    //Values for decryption
+    QByteArray ba = uiKey.toLatin1();
+    std::strncpy(key, ba.constData(), sizeof(key));
+
     DB_Connection.open();
     QSqlDatabase::database().transaction();
     QSqlQuery QueryExtractData(DB_Connection);
     QueryExtractData.prepare("SELECT * FROM vault1");
 
-    ui->tableWidget->setRowCount(0); //!TODO! fix QueryExtractData.size() returning only -1
+    ui->tableWidget->setRowCount(0);
     ui->tableWidget->setRowCount(32);
     int rownum = 0;
     if (QueryExtractData.exec()){
         //ui->tableWidget->setRowCount(QueryExtractData.size());
         while (QueryExtractData.next()){
+            QString password = QueryExtractData.value("password").toString();
+            ba = password.toLatin1();
+            char encrypted[64] = {0};
+            std::strncpy(encrypted, ba.constData(), sizeof(password.toLatin1()));
+
+            char decrypted[source_size] = { 0 };
+            size_t length = strlen(encrypted);
+            size_t chunkSize = 8;
+            size_t totalChunks = (length + chunkSize - 1) / chunkSize;
+
+            // Round Keys for DES Encryption and Decryption
+            char roundKeys[16][8];
+            DES_CreateKeys(key, roundKeys);
+
+            //Decryption
+            for (size_t i = 0; i < totalChunks; i++) {
+                char original[9] = { 0 }; // must be zero-initialized
+                char chunk[8] = { 0 };
+                size_t start = i * chunkSize;
+                size_t end = std::min(start + chunkSize, length);
+
+                std::copy(encrypted + start, encrypted + end, chunk);
+
+                DES_Decrypt(chunk, roundKeys, original);
+                memcpy(decrypted + 8*i, original, 8);
+            }
+
+            password = QString::fromLatin1(decrypted);
+
             ui->tableWidget->setItem(rownum, 0, new QTableWidgetItem(QueryExtractData.value("username").toString()));
-            ui->tableWidget->setItem(rownum, 1, new QTableWidgetItem(QueryExtractData.value("password").toString()));
+            ui->tableWidget->setItem(rownum, 1, new QTableWidgetItem(password));
             ui->tableWidget->setItem(rownum, 2, new QTableWidgetItem(QueryExtractData.value("platform").toString()));
+
             rownum++;
         }
 
@@ -101,6 +183,9 @@ void MainWindow::on_pushButton_2_released()
     }
     QSqlDatabase::database().commit();
     DB_Connection.close();
+
+    //Emptying memory where data has been stored
+    std::fill(key, key + 8, 0);
 }
 
 
@@ -108,15 +193,13 @@ void MainWindow::on_pushButton_3_released()
 {
     //delete button
     QString username = ui->usernameInput->text();
-    QString password = ui->passwordInput->text();
     QString platform = ui->platformInput->text();
 
     DB_Connection.open();
     QSqlDatabase::database().transaction();
     QSqlQuery QueryDeleteData(DB_Connection);
-    QueryDeleteData.prepare("DELETE FROM vault1 WHERE username = :username AND password = :password AND platform = :platform");
+    QueryDeleteData.prepare("DELETE FROM vault1 WHERE username = :username AND platform = :platform");
     QueryDeleteData.bindValue(":username", username);
-    QueryDeleteData.bindValue(":password", password);
     QueryDeleteData.bindValue(":platform", platform);
     if (QueryDeleteData.exec())
         qDebug() << "Query executed";
@@ -133,6 +216,43 @@ void MainWindow::on_pushButton_4_released()
     QString username = ui->usernameInput->text();
     QString password = ui->passwordInput->text();
     QString platform = ui->platformInput->text();
+
+    QString uiKey = ui->keyInput_2->text();
+    char key[8] = { 0 };
+
+    //Encryption
+    //Values for encryption
+    QByteArray ba = uiKey.toLatin1();
+    std::strncpy(key, ba.constData(), sizeof(key));
+
+    char source[source_size] = { 0 };
+    ba = password.toLatin1();
+    std::strncpy(source, ba.constData(), sizeof(password.toLatin1()));
+    size_t length = strlen(source);
+    size_t chunkSize = 8;
+    size_t totalChunks = (length + chunkSize - 1) / chunkSize;
+
+    // Round Keys for DES Encryption and Decryption
+    char roundKeys[16][8];
+    DES_CreateKeys(key, roundKeys);
+
+    char encrypted[64] = { 0 };
+
+    for (size_t i = 0; i < totalChunks; i++) {
+        char chunk[8] = { 0 }; // must be zero-initialized
+        char cipherText[8] = { 0 };
+        char original[9] = { 0 };
+        size_t start = i * chunkSize;
+        size_t end = std::min(start + chunkSize, length);
+
+        std::copy(source + start, source + end, chunk);
+
+        DES_Encrypt(chunk, roundKeys, cipherText);
+
+        memcpy(encrypted + 8 * i, cipherText, 8); //8 * i sets an offset for the encrypted char array
+    }
+
+    password = QString::fromLatin1(encrypted);
 
     DB_Connection.open();
     QSqlDatabase::database().transaction();

@@ -664,6 +664,6 @@ C:/Users/rares/Documents/Programming/Big Projects/QiBy/mainwindow.h
  mdp:C:/Qt/Tools/mingw1120_64/x86_64-w64-mingw32/include/wctype.h
  mdp:C:/Users/rares/Documents/Programming/Big Projects/QiBy/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/QiBy_autogen/moc_predefs.h
  mdp:C:/Users/rares/Documents/Programming/Big Projects/QiBy/mainwindow.h
+C:/Users/rares/Documents/Programming/Big Projects/QiBy/main.cpp
 C:/Users/rares/Documents/Programming/Big Projects/QiBy/mainwindow.cpp
  uic:./ui_mainwindow.h
-C:/Users/rares/Documents/Programming/Big Projects/QiBy/main.cpp
